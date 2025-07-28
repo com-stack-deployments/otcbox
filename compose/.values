@@ -1,0 +1,39 @@
+# SET COMPOSE_FOLDER first
+export COMPOSE_FOLDER="$(pwd)"
+# SET VOLUMES_FOLDER to something different, if you want to store data containers produce outside this compose project (folder)
+export VOLUMES_FOLDER="${COMPOSE_FOLDER}"
+# SET CONFIGS_FOLDER to something different, if you want to store configs outside this compose project (folder)
+export CONFIGS_FOLDER="${COMPOSE_FOLDER}"
+# SET SECRETS_FOLDER to something different, if you want to store secrets outside this compose project (folder)
+# SECRETS are created as plain volumes driven by the content of the file './compose/.secrets'.
+# The file also contain information on how to create real passwords (otherwise 'comstack1234' will be used).
+export SECRETS_FOLDER="${COMPOSE_FOLDER}"
+# VOLUMES, CONFIGS and SECRETS are moved adequately on first call to up.
+# SET HOOKS_FOLDER to something different, if you want to store hooks outside this compose project (folder)
+export HOOKS_FOLDER="$(pwd)"
+# SET DOCKERBIN to the binary to use (ONLY 'docker' supported for now, DO NOT CHANGE THIS!)
+export DOCKERBIN="docker"
+# Define the image tag to set, when image names are calculated
+# Set by: config/swarmit
+export SWARMIT_IMAGES_IMAGE_TAG="swarmit-0725"
+# Define service domain to use for your registry
+# Set by: config/swarmit
+export SWARMIT_IMAGES_REGISTRY_DOMAIN="${SWARMIT_IMAGES_REGISTRY_DOMAIN}"
+# Define service url to use for your registry
+# Set by: config/swarmit
+export SWARMIT_IMAGES_REGISTRY_URL="https://registry.${SWARMIT_INGRESS_BASE_DOMAIN}"
+# Name of this swarmit asset
+# Set by: internally/swarmit
+export SWARMIT_INFRA="otcbox"
+# Domain to set for deployment
+# Set by: config/swarmit
+export SWARMIT_INGRESS_BASE_DOMAIN="example.com"
+# Email address to use for letsencrypt
+# Set by: config/swarmit
+export SWARMIT_INGRESS_LE_EMAIL="mail@${SWARMIT_INGRESS_BASE_DOMAIN}"
+# Loglevel for Traefik
+# Set by: config/swarmit
+export SWARMIT_INGRESS_LOG_LEVEL="ERROR"
+# Define what will be the ingress incoming port
+# Set by: config/swarmit
+export SWARMIT_INGRESS_PORT="443"

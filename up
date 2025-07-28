@@ -1,0 +1,165 @@
+#!bin/bash
+source "./compose/.values"
+
+if [[ ! -z "${ENV_REQUIRED}" ]]
+then
+    MISSING=""
+    for i in "${!ENV_REQUIRED[@]}"
+    do
+        if [[ ! -v ${ENV_REQUIRED[$i]} ]]
+        then
+            echo "Environment variable ${ENV_REQUIRED[$i]} has to be set to a value."
+            echo "Please export a value with ${ENV_REQUIRED[$i]}, before you call up"
+            MISSING="1"
+        elif [[ -z "$(eval echo "$"${ENV_REQUIRED[$i]})" ]]
+        then
+            echo "Environment variable ${ENV_REQUIRED[$i]} is set to be set to a value."
+            echo "Please export a value with ${ENV_REQUIRED[$i]}, before you call up"
+            MISSING="1"
+        fi
+    done
+    if [[ "${MISSING}" == "1" ]]
+    then 
+        exit
+    fi
+fi
+
+
+boldon=`tput bold`
+boldoff=`tput sgr0`
+
+NOTSET="$(grep MUST_BE_PROVIDED ./compose/.values | wc -l)"
+if [[ "${NOTSET}" -gt "0" ]]
+then
+    echo "The following variable(s) need to be set:"
+    grep MUST_BE_PROVIDED "./compose/.values"
+    echo 
+    echo "Change the variable(s) in file ./compose/.values and try again"
+    exit
+fi
+source "./compose/.env"
+
+COMPOSE="$(which ${DOCKERBIN}-compose 2>/dev/null)"
+if [[ -z "${COMPOSE}" ]]
+then
+    COMPOSE="$(which ${DOCKERBIN} 2>/dev/null)"
+    if [[ -z "${COMPOSE}" ]]
+    then
+        echo "Cannot find ${DOCKERBIN}-compose, nor ${DOCKERBIN}"
+        exit 1
+    else
+        COMPOSE="${COMPOSE} compose"
+    fi
+fi
+echo "By default this deployment will create the following services for you"
+echo
+printf "> %-25s %s\n" "Registry" "https://registry.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "Registry Browser" "https://images.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "Container Logs" "https://logs.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "Ingress (Traefik)" "https://proxy.${SWARMIT_INGRESS_BASE_DOMAIN}/dashboard/"
+printf "> %-25s %s\n" "Access log dashboard" "https://webaccess.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "Ingress access-logs" "https://goaccess.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "PlantUML" "https://plantuml.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "Mermaid" "https://mermaid.${SWARMIT_INGRESS_BASE_DOMAIN}"
+printf "> %-25s %s\n" "Git hosting service" "https://git.${SWARMIT_INGRESS_BASE_DOMAIN}"
+echo "Please make sure that all shown domains will be resolved as the address"
+echo "of the host where want to deploy this zero-config-box"
+echo 
+echo "Consult this repos README file, in case you need more information on:"
+echo "> 'How to make the shown domains accessible ?' "
+echo 
+read -p "Continue? (Y/N): " confirm && [[ $confirm == [yY] || $confirm == [yY][eE][sS] ]] || exit 1
+
+sh "./helpers/prepare.sh"
+
+if [[ "$?" -eq "0" ]]
+then
+
+########### DEPLOYMENT START ################
+printf "\n${boldon}Running compose UP:${boldoff}\n"
+source "./compose/.secrets" 
+cd ./compose/otcbox
+cd ./swarmit
+# Deploying Stack: images
+cd ./images && source ./.env && ${COMPOSE} up -d && cd ..
+
+# Deploying Stack: core
+cd ./core && source ./.env && ${COMPOSE} up -d && cd ..
+
+# Deploying Stack: ingress
+cd ./ingress && source ./.env && ${COMPOSE} up -d && cd ..
+
+cd ..
+
+cd ./intern
+# Deploying Stack: docu
+cd ./docu && source ./.env && ${COMPOSE} up -d && cd ..
+
+# Deploying Stack: vcs
+cd ./vcs && source ./.env && ${COMPOSE} up -d && cd ..
+
+cd ..
+
+cd ..
+cd ..
+
+
+ALLCNT=$(docker ps -af label=com.swarmit.project=otcbox -q | wc -l)
+RUNNINGCNT=$(docker ps -f label=com.swarmit.project=otcbox -f health=none -q | wc -l)
+HEALTHYCNT=$(( "${ALLCNT}" - "${RUNNINGCNT}" ))
+ALLRUNNING=0
+
+printf "\n${boldon}Checking container status:${boldoff}\n"
+tput civis
+printf " %0*d - containers have to be 'healthy'\n" 3 ${HEALTHYCNT}
+printf " %0*d - containers have to be 'running'\n" 3 ${RUNNINGCNT}
+echo 
+printf " > wait for %0*d containers to enter desired state" 3 ${ALLCNT}
+echo 
+echo
+SEC=1
+SECS=0 
+while [[ "${ALLCNT}" -gt "${ALLRUNNING}" ]]
+do
+    SECS=$(( ${SECS} + ${SEC} ))
+    echo -ne "${HEALTHYCNT} healthy + ${RUNNINGCNT} running of ${ALLCNT} containers - (${SECS}s)\033[0K\r"
+    HEALTHYCNT=$(docker ps -f label=com.swarmit.project=otcbox -f health=healthy -q | wc -l)
+    RUNNINGCNT=$(docker ps -f label=com.swarmit.project=otcbox -f health=none -q | wc -l)
+    ALLRUNNING=$(( "${HEALTHYCNT}" + "${RUNNINGCNT}" ))
+    if [[ "${ALLCNT}" -gt "${ALLRUNNING}" ]]
+    then
+        sleep "${SEC}"
+    else
+        echo -e "${HEALTHYCNT} healthy + ${RUNNINGCNT} running in ${SECS} seconds ;)\033[0K\r" 
+    fi
+done
+tput cnorm
+printf "\n${boldon}Checking to run hooks:${boldoff}\n"
+if [[ ! -e ".hooks_triggered" ]]
+then
+    if [[ -e "helpers/post_hooks.once.sh" ]]
+    then
+        echo " 'after first deployment' hooks were found - executing"
+        sh "helpers/post_hooks.once.sh" > .hooks.once.log 2>&1
+    else
+        echo " No hooks found, to trigger 'after first deployment'"
+    fi
+    touch ".hooks_triggered"
+else
+    echo " 'after first deployment' hooks were already triggered"
+fi
+
+if [[ -e "helpers/post_hooks.always.sh" ]]    
+then
+    echo " 'after each deployment' hooks were found - executing"
+    sh "helpers/post_hooks.always.sh" > .hooks.always.log 2>&1
+else
+    echo " No hooks found, to trigger 'after each deployment'"
+fi
+
+########### DEPLOYMENT END ################
+echo
+printf "\n${boldon}Congratulations!${boldoff}\n\n"
+echo "Your deployment has been 'brought to life' and is ready to be used!"
+
+fi

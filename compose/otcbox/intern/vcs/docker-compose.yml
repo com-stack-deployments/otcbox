@@ -1,0 +1,332 @@
+---
+services:
+  act-runner:
+    env_file: .env.act-runner
+    image: registry.pub.deployment.center/asset/act-runner:${SWARMIT_IMAGES_IMAGE_TAG}
+    labels:
+      - com.swarmit.version=0.1
+      - com.swarmit.project=otcbox
+      - com.swarmit.asset=otcbox_intern_vcs_act-runner
+      - com.swarmit.feature.images.enabled=True
+      - com.swarmit.images.version=alpha-0.1
+      - com.swarmit.feature.core.enabled=True
+      - com.swarmit.core.version=alpha-0.1
+      - com.swarmit.feature.ingress.enabled=True
+      - com.swarmit.ingress.version=alpha-0.1
+    deploy:
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 2
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+    healthcheck:
+      test: /bin/true
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    environment:
+      GITEA_INSTANCE_URL: "https://git.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      GITEA_RUNNER_LOG_LEVEL: "trace"
+      GITEA_RUNNER_REGISTRATION_TOKEN_FILE: "/run/secrets/runner/token"
+      INFRA_INGRESS_DOMAIN: ".${SWARMIT_INGRESS_BASE_DOMAIN}"
+      INFRA_INGRESS_URL: "https://${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_BOX: "intern"
+      SWARMIT_CORE_ENABLED: "[]"
+      SWARMIT_IMAGES_ENABLED: "[]"
+      SWARMIT_IMAGES_IMAGE_TAG: "${SWARMIT_IMAGES_IMAGE_TAG}"
+      SWARMIT_IMAGES_REGISTRY_DOMAIN: "${SWARMIT_IMAGES_REGISTRY_DOMAIN}"
+      SWARMIT_IMAGES_REGISTRY_URL: "${SWARMIT_IMAGES_REGISTRY_URL}"
+      SWARMIT_INFRA: "${SWARMIT_INFRA}"
+      SWARMIT_INFRA_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_ASSET_DOMAIN: "True"
+      SWARMIT_INGRESS_BASE_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_BOX_DOMAIN: "True"
+      SWARMIT_INGRESS_DASHBOARD: "True"
+      SWARMIT_INGRESS_ERROR_PAGES: "True"
+      SWARMIT_INGRESS_INFRA_DOMAIN: "True"
+      SWARMIT_INGRESS_LE_CHALLENGE_TYPE: "unset"
+      SWARMIT_INGRESS_LE_DNS_CHALLENGE_DELAY: "5"
+      SWARMIT_INGRESS_LE_DNS_ENV_NAME: ""
+      SWARMIT_INGRESS_LE_DNS_KEY: "secret"
+      SWARMIT_INGRESS_LE_DNS_PROVIDER: ""
+      SWARMIT_INGRESS_LE_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_LE_EMAIL: "mail@${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_LE_ENABLE: "False"
+      SWARMIT_INGRESS_LOG_LEVEL: "ERROR"
+      SWARMIT_INGRESS_MAIL_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_PORT: "443"
+      SWARMIT_INGRESS_PROTOCOL: "https://"
+      SWARMIT_INGRESS_REPORTS: "True"
+      SWARMIT_INGRESS_SERVICE_DOMAIN: "True"
+      SWARMIT_INGRESS_SKIP_SSL_VERIFY: "${SWARMIT_INGRESS_SKIP_SSL_VERIFY}"
+      SWARMIT_INGRESS_STACK_DOMAIN: "True"
+      SWARMIT_LOGOHOST: "${SWARMIT_LOGOHOST}"
+      SWARMIT_PATH: "/app/swarmit/"
+      SWARMIT_PROVIDER: "swarm"
+      SWARMIT_SERVICE: "act-runner"
+      SWARMIT_STACK: "vcs"
+      SWARMIT_VOLUMES_PATH: "${VOLUMES_FOLDER}"
+    networks:
+      otcbox_intern_svcs:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${VOLUMES_FOLDER}/volumes/otcbox/swarmit/hooks:/var/lib/swarmit/hooks
+      - /usr/share/zoneinfo/Europe/Berlin:/etc/localtime:ro
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/actrunner:/run/secrets/runner
+      # configs as volumes
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/act-runner/act_runner_config/config.yaml.config:/etc/config.yaml
+    logging:
+      driver: json-file
+      options:
+        max-size: 40m
+        max-file: 2
+        mode: non-blocking
+        max-buffer-size: 4m
+  gitea-db:
+    env_file: .env.gitea-db
+    image: registry.pub.deployment.center/asset/mariadb:${SWARMIT_IMAGES_IMAGE_TAG}
+    command:
+      - --default_authentication_plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    labels:
+      - com.swarmit.version=0.1
+      - com.swarmit.project=otcbox
+      - com.swarmit.asset=otcbox_intern_vcs_gitea-db
+      - com.swarmit.feature.images.enabled=True
+      - com.swarmit.images.version=alpha-0.1
+      - com.swarmit.feature.core.enabled=True
+      - com.swarmit.core.version=alpha-0.1
+      - com.swarmit.feature.ingress.enabled=True
+      - com.swarmit.ingress.version=alpha-0.1
+    deploy:
+      endpoint_mode: dnsrr
+    healthcheck:
+      test: ['CMD', 'healthcheck.sh', '--connect', '--innodb_initialized']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    environment:
+      INFRA_INGRESS_DOMAIN: ".${SWARMIT_INGRESS_BASE_DOMAIN}"
+      INFRA_INGRESS_URL: "https://${SWARMIT_INGRESS_BASE_DOMAIN}"
+      MYSQL_ALLOW_EMPTY_PASSWORD: "False"
+      MYSQL_DATABASE: "gitea"
+      MYSQL_INITDB_SKIP_TZINFO: "False"
+      MYSQL_PASSWORD_FILE: "/run/secrets/db_user"
+      MYSQL_RANDOM_ROOT_PASSWORD: "False"
+      MYSQL_ROOT_PASSWORD_FILE: "/run/secrets/db_root"
+      MYSQL_USER: "gitea"
+      SWARMIT_BOX: "intern"
+      SWARMIT_CORE_ENABLED: "[]"
+      SWARMIT_IMAGES_ENABLED: "[]"
+      SWARMIT_IMAGES_IMAGE_TAG: "${SWARMIT_IMAGES_IMAGE_TAG}"
+      SWARMIT_IMAGES_REGISTRY_DOMAIN: "${SWARMIT_IMAGES_REGISTRY_DOMAIN}"
+      SWARMIT_IMAGES_REGISTRY_URL: "${SWARMIT_IMAGES_REGISTRY_URL}"
+      SWARMIT_INFRA: "${SWARMIT_INFRA}"
+      SWARMIT_INFRA_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_ASSET_DOMAIN: "True"
+      SWARMIT_INGRESS_BASE_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_BOX_DOMAIN: "True"
+      SWARMIT_INGRESS_DASHBOARD: "True"
+      SWARMIT_INGRESS_ERROR_PAGES: "True"
+      SWARMIT_INGRESS_INFRA_DOMAIN: "True"
+      SWARMIT_INGRESS_LE_CHALLENGE_TYPE: "unset"
+      SWARMIT_INGRESS_LE_DNS_CHALLENGE_DELAY: "5"
+      SWARMIT_INGRESS_LE_DNS_ENV_NAME: ""
+      SWARMIT_INGRESS_LE_DNS_KEY: "secret"
+      SWARMIT_INGRESS_LE_DNS_PROVIDER: ""
+      SWARMIT_INGRESS_LE_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_LE_EMAIL: "mail@${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_LE_ENABLE: "False"
+      SWARMIT_INGRESS_LOG_LEVEL: "ERROR"
+      SWARMIT_INGRESS_MAIL_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_PORT: "443"
+      SWARMIT_INGRESS_PROTOCOL: "https://"
+      SWARMIT_INGRESS_REPORTS: "True"
+      SWARMIT_INGRESS_SERVICE_DOMAIN: "True"
+      SWARMIT_INGRESS_SKIP_SSL_VERIFY: "${SWARMIT_INGRESS_SKIP_SSL_VERIFY}"
+      SWARMIT_INGRESS_STACK_DOMAIN: "True"
+      SWARMIT_LOGOHOST: "${SWARMIT_LOGOHOST}"
+      SWARMIT_PATH: "/app/swarmit/"
+      SWARMIT_PROVIDER: "swarm"
+      SWARMIT_SERVICE: "gitea-db"
+      SWARMIT_STACK: "vcs"
+      SWARMIT_VOLUMES_PATH: "${VOLUMES_FOLDER}"
+    networks:
+      otcbox_intern_svcs:
+    volumes:
+      - ${VOLUMES_FOLDER}/volumes/otcbox/swarmit/hooks:/var/lib/swarmit/hooks
+      - /usr/share/zoneinfo/Europe/Berlin:/etc/localtime:ro
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea-db/dbdata:/var/lib/mysql
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea-db/initdb:/docker-entrypoint-initdb.d
+      # secrets as volumes
+      - ${SECRETS_FOLDER}/secrets/otcbox/intern/vcs/gitea-db/root.secret:/run/secrets/db_root
+      - ${SECRETS_FOLDER}/secrets/otcbox/intern/vcs/gitea-db/user.secret:/run/secrets/db_user
+    logging:
+      driver: json-file
+      options:
+        max-size: 40m
+        max-file: 2
+        mode: non-blocking
+        max-buffer-size: 4m
+  gitea:
+    env_file: .env.gitea
+    image: registry.pub.deployment.center/asset/gitea:${SWARMIT_IMAGES_IMAGE_TAG}
+    labels:
+      - com.swarmit.version=0.1
+      - traefik.tcp.routers.${SWARMIT_BOX}-gitea-ssh.entryPoints=git
+      - traefik.tcp.routers.${SWARMIT_BOX}-gitea-ssh.rule=HostSNI(`*`)
+      - traefik.tcp.routers.${SWARMIT_BOX}-gitea-ssh.service=${SWARMIT_BOX}-gitea-ssh
+      - traefik.tcp.services.${SWARMIT_BOX}-gitea-ssh.loadbalancer.server.port=22
+      - com.swarmit.project=otcbox
+      - com.swarmit.asset=otcbox_intern_vcs_gitea
+      - com.swarmit.feature.images.enabled=True
+      - com.swarmit.images.version=alpha-0.1
+      - com.swarmit.feature.core.enabled=True
+      - com.swarmit.core.version=alpha-0.1
+      - com.swarmit.feature.ingress.enabled=True
+      - com.swarmit.ingress.version=alpha-0.1
+      - com.swarmit.asset.isPublic=True
+      - traefik.constraint-label=traefik-public
+      - traefik.http.services.otcbox_intern_vcs_gitea.loadbalancer.server.port=3000
+      - traefik.http.routers.otcbox_intern_vcs_gitea.tls=true
+      - traefik.http.routers.otcbox_intern_vcs_gitea.entrypoints=web-secure
+      - traefik.http.routers.otcbox_intern_vcs_gitea.middlewares=frameHeader@file,ingress-errors@file
+      - traefik.http.routers.otcbox_intern_vcs_gitea.rule=Host(`git.${SWARMIT_INGRESS_BASE_DOMAIN}`)
+    deploy:
+      endpoint_mode: dnsrr
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      update_config:
+        parallelism: 2
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+    healthcheck:
+      test: curl http://localhost:3000/api/v1/version > /dev/null 2>&1
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    environment:
+      ALLOWED_HOST_LIST: "$${DRONE_HOST},$${TAIGA_HOST}"
+      APP_NAME: "${SWARMIT_INFRA}"
+      DB_HOST: "gitea-db:3306"
+      DB_NAME: "gitea"
+      DB_PASSWD: "IGNORED_SET_BY_SECRET"
+      DB_TYPE: "mysql"
+      DB_USER: "gitea"
+      DISABLE_REGISTRATION: "False"
+      GITEA_ADMIN_EMAIL: "gitea-admin@${SWARMIT_INGRESS_BASE_DOMAIN}"
+      GITEA_AUTHOR: "Daniel Schlieder"
+      GITEA_DB_RETRIES: "30"
+      GITEA_DB_RETRY_BACKOFF: "6"
+      GITEA_DEFAULT_LOGIN_LINK: "/user/login"
+      GITEA_DESCRIPTION: "Comstack Internal VCS"
+      GITEA_ENTRYPOINT: "git"
+      GITEA_HOME_TEXT: "Your home for internal Comstack git repositories"
+      GITEA_HOME_TITLE: "ComStack CI/CD Haven"
+      GITEA_INGRESS_PORT: "9922"
+      GITEA_KEYWORDS: "ComputerStack Comstack Internal Intern"
+      GITEA_LOG_LEVEL: "Error"
+      INFRA_INGRESS_DOMAIN: ".${SWARMIT_INGRESS_BASE_DOMAIN}"
+      INFRA_INGRESS_URL: "https://${SWARMIT_INGRESS_BASE_DOMAIN}"
+      INSTALL_LOCK: "True"
+      MAIL_SERVER: "mail-out"
+      MERMAID_URL: "https://mermaid.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      PLANTUML_URL: "https://plantuml.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      REQUIRE_SIGNIN_VIEW: "True"
+      ROOT_URL: "https://git.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SERVICE_INGRESS_DOMAIN: "git.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SERVICE_INGRESS_URL: "https://git.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_BOX: "intern"
+      SWARMIT_CORE_ENABLED: "[]"
+      SWARMIT_IMAGES_ENABLED: "[]"
+      SWARMIT_IMAGES_IMAGE_TAG: "${SWARMIT_IMAGES_IMAGE_TAG}"
+      SWARMIT_IMAGES_REGISTRY_DOMAIN: "${SWARMIT_IMAGES_REGISTRY_DOMAIN}"
+      SWARMIT_IMAGES_REGISTRY_URL: "${SWARMIT_IMAGES_REGISTRY_URL}"
+      SWARMIT_INFRA: "${SWARMIT_INFRA}"
+      SWARMIT_INFRA_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_ASSET_DOMAIN: "True"
+      SWARMIT_INGRESS_BASE_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_BOX_DOMAIN: "True"
+      SWARMIT_INGRESS_DASHBOARD: "True"
+      SWARMIT_INGRESS_ERROR_PAGES: "True"
+      SWARMIT_INGRESS_INFRA_DOMAIN: "True"
+      SWARMIT_INGRESS_LE_CHALLENGE_TYPE: "unset"
+      SWARMIT_INGRESS_LE_DNS_CHALLENGE_DELAY: "5"
+      SWARMIT_INGRESS_LE_DNS_ENV_NAME: ""
+      SWARMIT_INGRESS_LE_DNS_KEY: "secret"
+      SWARMIT_INGRESS_LE_DNS_PROVIDER: ""
+      SWARMIT_INGRESS_LE_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_LE_EMAIL: "mail@${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_LE_ENABLE: "False"
+      SWARMIT_INGRESS_LOG_LEVEL: "ERROR"
+      SWARMIT_INGRESS_MAIL_DOMAIN: "${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_INGRESS_PORT: "443"
+      SWARMIT_INGRESS_PROTOCOL: "https://"
+      SWARMIT_INGRESS_REPORTS: "True"
+      SWARMIT_INGRESS_SERVICE_DOMAIN: "True"
+      SWARMIT_INGRESS_SKIP_SSL_VERIFY: "${SWARMIT_INGRESS_SKIP_SSL_VERIFY}"
+      SWARMIT_INGRESS_STACK_DOMAIN: "True"
+      SWARMIT_LOGOHOST: "${SWARMIT_LOGOHOST}"
+      SWARMIT_PATH: "/app/swarmit/"
+      SWARMIT_PROVIDER: "swarm"
+      SWARMIT_SERVICE: "gitea"
+      SWARMIT_SERVICE_DOMAIN: "git.${SWARMIT_INGRESS_BASE_DOMAIN}"
+      SWARMIT_STACK: "vcs"
+      SWARMIT_VOLUMES_PATH: "${VOLUMES_FOLDER}"
+      USE_SERVICE_WORKER: "False"
+      USER_GID: "1000"
+      USER_UID: "1000"
+    networks:
+      otcbox_core:
+      otcbox_intern_svcs:
+      otcbox_public:
+    volumes:
+      - ${VOLUMES_FOLDER}/volumes/otcbox/swarmit/hooks:/var/lib/swarmit/hooks
+      - /usr/share/zoneinfo/Europe/Berlin:/etc/localtime:ro
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/repos:/data/git
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/app:/data/gitea
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/actrunner:/tmp/runner/
+      - ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/apitoken:/tmp/api/
+      # secrets as volumes
+      - ${SECRETS_FOLDER}/secrets/otcbox/intern/vcs/gitea-db/user.secret:/run/secrets/db_user
+      - ${SECRETS_FOLDER}/secrets/otcbox/intern/vcs/gitea-db/root.secret:/run/secrets/db_root
+      - ${SECRETS_FOLDER}/secrets/otcbox/intern/vcs/gitea/cicd_user.secret:/run/secrets/cicd
+      - ${SECRETS_FOLDER}/secrets/otcbox/intern/vcs/gitea/cicd_key.secret:/run/secrets/cicd_key
+      # configs as volumes
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/extra_links/header.tmpl-22f4.config:/data/gitea/templates/custom/header.tmpl
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/custom_css/custom.css-22f4.config:/data/gitea/public/assets/css/custom.css
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/base_user_login_link/base_user_login_link.tmpl-22f4.config:/data/gitea/templates/custom/base_user_login_link.tmpl
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/header/head.tmpl-22f4.config:/data/gitea/templates/base/head.tmpl
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/app_ini/app.ini-22f4.config:/data/gitea/conf/app.ini
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/uml_deflate/deflate.js-22f4.config:/data/gitea/public/assets/deflate.js
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/uml_encode/encode.js-22f4.config:/data/gitea/public/assets/encode.js
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/uml_parse/parse.js-22f4.config:/data/gitea/public/assets/parse.js
+      - ${CONFIGS_FOLDER}/configs/otcbox/intern/vcs/gitea/custom_footer_template/footer.tmpl-22f4.config:/data/gitea/templates/custom/footer.tmpl
+    logging:
+      driver: json-file
+      options:
+        max-size: 40m
+        max-file: 2
+        mode: non-blocking
+        max-buffer-size: 4m
+networks:
+  otcbox_core:
+    external: true
+  otcbox_intern_svcs:
+    external: true
+  otcbox_public:
+    external: true

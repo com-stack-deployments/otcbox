@@ -1,0 +1,2 @@
+#!/bin/sh
+gitea actions generate-runner-token > /tmp/token

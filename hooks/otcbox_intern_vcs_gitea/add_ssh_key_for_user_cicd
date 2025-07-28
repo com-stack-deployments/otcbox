@@ -1,0 +1,13 @@
+#!/bin/sh
+AUTH=$(echo "cicd:$(cat /run/secrets/cicd)" | base64)
+KEY="$(cat /run/secrets/cicd_key)"
+CURL=$( cat <<- EOF
+    curl    -X POST
+            -H "accept: application/json"
+            -H "authorization: Basic ${AUTH::-4}"
+            -H "Content-Type: application/json"
+            -d '{ "key": "${KEY}", "read_only": false, "title": "cicd key" }'
+            http://localhost:3000/api/v1/user/keys
+EOF
+)
+echo $CURL | bash -

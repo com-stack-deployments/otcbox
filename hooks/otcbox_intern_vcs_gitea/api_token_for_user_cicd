@@ -1,0 +1,3 @@
+#!/bin/sh
+gitea admin user generate-access-token --username cicd --token-name swarmit --scopes "all" > /tmp/api_token
+cat /tmp/api_token

@@ -1,0 +1,3 @@
+#!/bin/sh
+gitea admin user create --username cicd --password  "$(cat /run/secrets/cicd)" --admin --email "cicd@${SERVICE_INGRESS_DOMAIN}"
+gitea admin user must-change-password --unset cicd
