@@ -2,7 +2,7 @@
 <hr style="margin: 0px; margin-bottom: 2.25rem; border-top: 1px solid var(--theme);"/>
 
 #  <img style="margin:0rem" width="38" height="38" src="https://logos.pub.deployment.center/logo/custom/company-comstack/infra-otcbox?format=svg"/> otcbox
-ComputerStacks OTC Poc Box
+OTC Poc - This deployment provides all Serivces that are required for Project: OTC-TRAI
 
 
 <hr style="margin: 0px; margin-bottom: 2.25rem; border: 0px;"/>
@@ -12,15 +12,15 @@ You're looking at a `zero-config-box` - one or more [docker compose projects](ht
 
 # Provides 
 
-**12 features** (from **5** docker compose projects) 
+**10 features** (from **5** docker compose projects) 
 This `zero-config-box` provides the following features:
 <details>
   <summary>
    <h2> 
-     <img width="22" height="22" alt="" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-images?format=svg"/>
-     Image management
+     <img width="22" height="22" alt="Container Registry Infrastructure - SWARM|it Platform" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-images?format=svg"/>
+     Container Registry & Browser
    </h2>
-   <p>provides image registry</p>
+   <p>Private container registry infrastructure with Docker Registry backend and web-based image browser for secure container image storage and management</p>
   </summary>
   <ul>
    <li> 
@@ -40,10 +40,10 @@ This `zero-config-box` provides the following features:
 <details>
   <summary>
    <h2> 
-     <img width="22" height="22" alt="Core tools" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-core?format=svg"/>
-     Core functions
+     <img width="22" height="22" alt="Core Infrastructure Services - SWARM|it Platform" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-core?format=svg"/>
+     Infrastructure Operations Suite
    </h2>
-   <p>Provides commonly used core services</p>
+   <p>Essential infrastructure stack providing centralized logging, administrative dashboards, mail relay services, and branding assets for operational management</p>
   </summary>
   <ul>
    <li> 
@@ -57,10 +57,10 @@ This `zero-config-box` provides the following features:
 <details>
   <summary>
    <h2> 
-     <img width="22" height="22" alt="SWARM|it feature 'ingress'" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-ingress?format=svg"/>
-     Service Ingress router
+     <img width="22" height="22" alt="Network Gateway Infrastructure - SWARM|it Platform" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-ingress?format=svg"/>
+     Network Gateway & Analytics
    </h2>
-   <p>provides ingress controller using Traefik proxy</p>
+   <p>Complete ingress infrastructure stack with Traefik reverse proxy, SSL termination, custom error pages, and real-time access log analytics</p>
   </summary>
   <ul>
    <li> 
@@ -73,18 +73,6 @@ This `zero-config-box` provides the following features:
     <h3> 
      <img width="18" height="18" alt="traefik" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/service-traefik?format=svg"/>
      <b>Traefik Proxy</b> - <em>Application proxy</em>
-    </h3>    
-   </li>
-   <li> 
-    <h3> 
-     <img width="18" height="18" alt="httpd" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/service-httpd?format=svg"/>
-     <b>Apache HTTP Server</b> - <em>Log analyzer GUI</em>
-    </h3>    
-   </li>
-   <li> 
-    <h3> 
-     <img width="18" height="18" alt="goaccess" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/service-goaccess?format=svg"/>
-     <b>GoAccess</b> - <em>Access.log analyzer</em>
     </h3>    
    </li>
   </ul>
@@ -175,14 +163,11 @@ $ cd /tmp/otcbox
 
 The default password is `comstack1234`, check the next section to find out more.
 
-***Note:*** Read [Create your own credentials](DEPLOYMENT.md#Create-your-own-credentials) in case you want to create your own secrets.
+## Credentials
 
-# Credentials
+**IMPORTANT:** Change credentials **BEFORE** your first deployment, in case you want to use your own ones!
 
-**All** credentials, which are used in our `zero-config-boxes`, are set to one default password: `comstack1234`.
-
-Nevertheless, you need to know which combination of user name and password is required for which service. Read the following table
-carefully to know, which services use credentials and what for.
+**All** credentials used in our `zero-config-boxes` are set to one default password: `comstack1234`.
 
 This deployment (**otcbox**) uses the following credentials:
 
@@ -195,6 +180,15 @@ This deployment (**otcbox**) uses the following credentials:
 |cicd_key|None|Hidden for documentation!|`gitea` |SSH pub key for gitea user 'cicd'|
 
 
+### Security Notice
+
+For production use, you **must** change these default credentials before running your first deployment. Once services are initialized with the default passwords, changing them requires additional steps.
+
+**Read the complete guide:** [Create your own credentials](DEPLOYMENT.md#Create-your-own-credentials) section in DEPLOYMENT.md explains:
+- How to generate secure passwords  
+- Which files to modify
+- Why timing matters (before first deployment)
+- Step-by-step password creation commands
 # Licensing
 
 By deploying this box, you agree to these licenses:
@@ -202,9 +196,9 @@ By deploying this box, you agree to these licenses:
 
 
 - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0)
-  ***used by***: `registry` `Apache HTTP Server`
+  ***used by***: `registry`
 - [MIT License](None)
-  ***used by***: `registry-browser` `Core tools` `HTTP Status code pages` `Traefik Proxy` `GoAccess` `mermaidjs` `Gitea`
+  ***used by***: `registry-browser` `Core Infrastructure Services - SWARM|it Platform` `HTTP Status code pages` `Traefik Proxy` `mermaidjs` `Gitea`
 - [GNU General Public License v3.0](https://choosealicense.com/licenses/gpl-v3)
   ***used by***: `PlantUML`
 - [GNU General Public License v2.0](https://choosealicense.com/licenses/gpl-v2)

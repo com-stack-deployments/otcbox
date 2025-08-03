@@ -57,8 +57,6 @@ printf "> %-25s %s\n" "Registry" "https://registry.${SWARMIT_INGRESS_BASE_DOMAIN
 printf "> %-25s %s\n" "Registry Browser" "https://images.${SWARMIT_INGRESS_BASE_DOMAIN}"
 printf "> %-25s %s\n" "Container Logs" "https://logs.${SWARMIT_INGRESS_BASE_DOMAIN}"
 printf "> %-25s %s\n" "Ingress (Traefik)" "https://proxy.${SWARMIT_INGRESS_BASE_DOMAIN}/dashboard/"
-printf "> %-25s %s\n" "Access log dashboard" "https://webaccess.${SWARMIT_INGRESS_BASE_DOMAIN}"
-printf "> %-25s %s\n" "Ingress access-logs" "https://goaccess.${SWARMIT_INGRESS_BASE_DOMAIN}"
 printf "> %-25s %s\n" "PlantUML" "https://plantuml.${SWARMIT_INGRESS_BASE_DOMAIN}"
 printf "> %-25s %s\n" "Mermaid" "https://mermaid.${SWARMIT_INGRESS_BASE_DOMAIN}"
 printf "> %-25s %s\n" "Git hosting service" "https://git.${SWARMIT_INGRESS_BASE_DOMAIN}"

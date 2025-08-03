@@ -2,7 +2,7 @@
 services:
   plantuml:
     env_file: .env.plantuml
-    image: registry.pub.deployment.center/asset/plantuml:${SWARMIT_IMAGES_IMAGE_TAG}
+    image: registry.${SWARMIT_INGRESS_BASE_DOMAIN}/asset/plantuml:${SWARMIT_IMAGES_IMAGE_TAG}
     labels:
       - com.swarmit.version=0.1
       - com.swarmit.project=otcbox
@@ -85,7 +85,7 @@ services:
         max-buffer-size: 4m
   mermaid:
     env_file: .env.mermaid
-    image: registry.pub.deployment.center/asset/mermaid:${SWARMIT_IMAGES_IMAGE_TAG}
+    image: registry.${SWARMIT_INGRESS_BASE_DOMAIN}/asset/mermaid:${SWARMIT_IMAGES_IMAGE_TAG}
     labels:
       - com.swarmit.version=0.1
       - com.swarmit.project=otcbox

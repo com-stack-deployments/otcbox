@@ -4,8 +4,6 @@ mkdir -p ${VOLUMES_FOLDER}/volumes/otcbox/swarmit/images/registry/data
 ${DOCKERBIN} volume create --opt device=${VOLUMES_FOLDER}/volumes/otcbox/swarmit/images/registry/data --opt type=none --opt o=bind otcbox_swarmit_images_registry_data
 mkdir -p ${VOLUMES_FOLDER}/volumes/otcbox/swarmit/core/logs/data
 ${DOCKERBIN} volume create --opt device=${VOLUMES_FOLDER}/volumes/otcbox/swarmit/core/logs/data --opt type=none --opt o=bind otcbox_swarmit_core_logs_data
-mkdir -p ${VOLUMES_FOLDER}/volumes/otcbox/swarmit/ingress/httpd/www
-${DOCKERBIN} volume create --opt device=${VOLUMES_FOLDER}/volumes/otcbox/swarmit/ingress/httpd/www --opt type=none --opt o=bind otcbox_swarmit_ingress_httpd_www
 mkdir -p ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/actrunner
 ${DOCKERBIN} volume create --opt device=${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea/actrunner --opt type=none --opt o=bind otcbox_intern_vcs_gitea_actrunner
 mkdir -p ${VOLUMES_FOLDER}/volumes/otcbox/intern/vcs/gitea-db/dbdata

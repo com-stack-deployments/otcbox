@@ -5,19 +5,14 @@
 &nbsp; otcbox
 </h1>
 
-# About
+## About
 You're looking at a `zero-config-box` - one or more [docker compose projects](https://docs.docker.com/compose/gettingstarted/) that can be deployed with [Docker Compose](https://docs.docker.com/compose/).
 
-
-
-
-## What <code>zero-config</code> means
+### What `zero-config` means
 
 Simple: **Deploy and use** (not deploy and configure).
 
-
 When you deploy our boxes, everything is already set up and ready to go. All our `zero-config-boxes` are thoroughly tested before we publish them.
-
 
 **An example is worth a thousand words**
 
@@ -28,32 +23,25 @@ When you deploy our WordPress box, you get:
 
 You can start building your site right away, instead of starting with setting up WordPress.
 
-
-But even with our  `zero-config-boxes` there are some services that cannot be pre-configured because:
+But even with our `zero-config-boxes` there are some services that cannot be pre-configured because:
 - Licensing rules require you to agree to terms first
 - The service doesn't support automatic setup
 
 In case such a service is included, we'll tell you exactly what steps to take after your very first deployment to finish the setup.
 
-## Changes
-
+### Changes
 
 You're free to customize and modify the docker compose projects wherever you need. Once you start making changes, things can get complex quickly - you'll need to know what you're doing.
 
-
 That's where our optional paid support comes in: to help when your customizations get tricky.
 
-
-## Community (Coming Soon)
-
+### Community (Coming Soon)
 
 We're building a community where users can share knowledge, tips, and experiences with our `zero-config-boxes`.
 
-
 Want to know when it launches? [Leave your email address](https://coming-soon.comstack.de) and we'll let you know when the community is ready!
 
-
-<hr/>
+---
 
 
 # Deployment details
@@ -61,20 +49,20 @@ Want to know when it launches? [Leave your email address](https://coming-soon.co
 
 ## Name: otcbox
 
-ComputerStacks OTC Poc Box
+OTC Poc - This deployment provides all Serivces that are required for Project: OTC-TRAI
 
 
 # Provides 
 
-**12 features** (from **5** docker compose projects) 
+**10 features** (from **5** docker compose projects) 
 This `zero-config-box` provides the following features:
 <details>
   <summary>
    <h2> 
-     <img width="22" height="22" alt="" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-images?format=svg"/>
-     Image management
+     <img width="22" height="22" alt="Container Registry Infrastructure - SWARM|it Platform" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-images?format=svg"/>
+     Container Registry & Browser
    </h2>
-   <p>provides image registry</p>
+   <p>Private container registry infrastructure with Docker Registry backend and web-based image browser for secure container image storage and management</p>
   </summary>
   <ul>
    <li> 
@@ -94,10 +82,10 @@ This `zero-config-box` provides the following features:
 <details>
   <summary>
    <h2> 
-     <img width="22" height="22" alt="Core tools" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-core?format=svg"/>
-     Core functions
+     <img width="22" height="22" alt="Core Infrastructure Services - SWARM|it Platform" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-core?format=svg"/>
+     Infrastructure Operations Suite
    </h2>
-   <p>Provides commonly used core services</p>
+   <p>Essential infrastructure stack providing centralized logging, administrative dashboards, mail relay services, and branding assets for operational management</p>
   </summary>
   <ul>
    <li> 
@@ -111,10 +99,10 @@ This `zero-config-box` provides the following features:
 <details>
   <summary>
    <h2> 
-     <img width="22" height="22" alt="SWARM|it feature 'ingress'" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-ingress?format=svg"/>
-     Service Ingress router
+     <img width="22" height="22" alt="Network Gateway Infrastructure - SWARM|it Platform" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/stack-ingress?format=svg"/>
+     Network Gateway & Analytics
    </h2>
-   <p>provides ingress controller using Traefik proxy</p>
+   <p>Complete ingress infrastructure stack with Traefik reverse proxy, SSL termination, custom error pages, and real-time access log analytics</p>
   </summary>
   <ul>
    <li> 
@@ -127,18 +115,6 @@ This `zero-config-box` provides the following features:
     <h3> 
      <img width="18" height="18" alt="traefik" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/service-traefik?format=svg"/>
      <b>Traefik Proxy</b> - <em>Application proxy</em>
-    </h3>    
-   </li>
-   <li> 
-    <h3> 
-     <img width="18" height="18" alt="httpd" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/service-httpd?format=svg"/>
-     <b>Apache HTTP Server</b> - <em>Log analyzer GUI</em>
-    </h3>    
-   </li>
-   <li> 
-    <h3> 
-     <img width="18" height="18" alt="goaccess" src="https://logos.pub.deployment.center/logo/custom/swarmit-asset/service-goaccess?format=svg"/>
-     <b>GoAccess</b> - <em>Access.log analyzer</em>
     </h3>    
    </li>
   </ul>
@@ -204,9 +180,9 @@ The software - provided through this `zero-config-box` -  is licensed under:
 
 
 - [Apache License 2.0](https://choosealicense.com/licenses/apache-2.0)
-  ***used by***: `registry` `Apache HTTP Server`
+  ***used by***: `registry`
 - [MIT License](None)
-  ***used by***: `registry-browser` `Core tools` `HTTP Status code pages` `Traefik Proxy` `GoAccess` `mermaidjs` `Gitea`
+  ***used by***: `registry-browser` `Core Infrastructure Services - SWARM|it Platform` `HTTP Status code pages` `Traefik Proxy` `mermaidjs` `Gitea`
 - [GNU General Public License v3.0](https://choosealicense.com/licenses/gpl-v3)
   ***used by***: `PlantUML`
 - [GNU General Public License v2.0](https://choosealicense.com/licenses/gpl-v2)
@@ -279,7 +255,6 @@ With the previously shown Ingress settings the following URLs will be accessible
 - Registry Browser - https://images.example.com
 - Container Logs - https://logs.example.com
 - Ingress (Traefik) - https://proxy.example.com/dashboard/
-- Access log dashboard - https://webaccess.example.com
 - PlantUML - https://plantuml.example.com
 - Mermaid - https://mermaid.example.com
 - Git hosting service - https://git.example.com
@@ -291,14 +266,14 @@ After you have changed `SWARMIT_INGRESS_BASE_DOMAIN` in `./compose/.values` exec
 
 ```bash
 cd ${COMPOSE_FOLDER}
-sudo bash -c 'source ./compose/.values && echo -e "# Added by a ComStack zero-config-box\n127.0.0.1		registry.${SWARMIT_INGRESS_BASE_DOMAIN} images.${SWARMIT_INGRESS_BASE_DOMAIN} logs.${SWARMIT_INGRESS_BASE_DOMAIN} proxy.${SWARMIT_INGRESS_BASE_DOMAIN} webaccess.${SWARMIT_INGRESS_BASE_DOMAIN} goaccess.${SWARMIT_INGRESS_BASE_DOMAIN} plantuml.${SWARMIT_INGRESS_BASE_DOMAIN} mermaid.${SWARMIT_INGRESS_BASE_DOMAIN} git.${SWARMIT_INGRESS_BASE_DOMAIN} \n" >> /etc/hosts'
+sudo bash -c 'source ./compose/.values && echo -e "# Added by a ComStack zero-config-box\n127.0.0.1		registry.${SWARMIT_INGRESS_BASE_DOMAIN} images.${SWARMIT_INGRESS_BASE_DOMAIN} logs.${SWARMIT_INGRESS_BASE_DOMAIN} proxy.${SWARMIT_INGRESS_BASE_DOMAIN} plantuml.${SWARMIT_INGRESS_BASE_DOMAIN} mermaid.${SWARMIT_INGRESS_BASE_DOMAIN} git.${SWARMIT_INGRESS_BASE_DOMAIN} \n" >> /etc/hosts'
 ```
 
 to create an entry like the following in your local hosts-table `/etc/hosts`
 
 ```
 # Added by a ComStack zero-config-box
-127.0.0.1		registry.example.com images.example.com logs.example.com proxy.example.com webaccess.example.com goaccess.example.com plantuml.example.com mermaid.example.com git.example.com 
+127.0.0.1		registry.example.com images.example.com logs.example.com proxy.example.com plantuml.example.com mermaid.example.com git.example.com 
 ```
 
 ## Persistence
@@ -350,19 +325,19 @@ Just check the file `./compose/.secrets`. This file is used to set and provide a
 
 Futher the mentioned file provides a hint with each password, noted in the file. 
 ```bash
-# SECRET: ${SEC_OTCBOX_SWARMIT_INGRESS_TRAEFIK_INGRESS_ADMIN}
+# SECRET: ${SEC_otcbox_SWARMIT_INGRESS_TRAEFIK_INGRESS_ADMIN}
 # created with:
 #
 #    $ openssl passwd -apr1 comstack1234
 #
 # SECRET Decoded val: comstack1234
-export SEC_OTCBOX_SWARMIT_INGRESS_TRAEFIK_INGRESS_ADMIN="\$apr1\$DwVI4.nz\$.02YBfrP9NJJOM8qoiWzc/"
-# SECRET: ${SEC_OTCBOX_INTERN_VCS_GITEA_DB_ROOT}
+export SEC_otcbox_SWARMIT_INGRESS_TRAEFIK_INGRESS_ADMIN="\$apr1\$DwVI4.nz\$.02YBfrP9NJJOM8qoiWzc/"
+# SECRET: ${SEC_otcbox_INTERN_VCS_GITEA_DB_ROOT}
 # created with:
 #
 #    $ python -c 'from secrets import token_urlsafe; from re import sub as resub; len = 12; print(resub("-","0", token_urlsafe(len)))'
 #
-export SEC_OTCBOX_INTERN_VCS_GITEA_DB_ROOT="comstack1234"
+export SEC_otcbox_INTERN_VCS_GITEA_DB_ROOT="comstack1234"
 ```
 
 Simply copy the hint you find in the comment `created with:` and paste it to your console. 
